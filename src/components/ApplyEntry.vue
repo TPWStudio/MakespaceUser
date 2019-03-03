@@ -132,7 +132,7 @@
               <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
                 <el-input v-model="dialogFormNew.name" auto-complete="off" placeholder="请输入姓名"></el-input>
               </el-form-item>
-              <el-form-item label="学号" prop="stuNumber" :label-width="formLabelWidth" required="">
+              <el-form-item label="学号" prop="stuNumber" :label-width="formLabelWidth">
                 <el-input v-model="dialogFormNew.stuNumber" placeholder="请输入您的学号"></el-input>
               </el-form-item>
               <el-form-item label="学院" prop="academe"  >
@@ -150,7 +150,7 @@
               <!--</el-form-item>-->
               <el-form-item label="学历" prop="eduBack" :label-width="formLabelWidth">
                 <!--<el-input v-model="dialogFormNew.eduBack" auto-complete="off" placeholder="请输入学历"></el-input>-->
-                <el-select v-model="dialogFormEdit.eduBack " placeholder="请选择学历" style="width: 100%">
+                <el-select v-model="dialogFormNew.eduBack " placeholder="请选择学历" style="width: 100%">
                   <el-option
                     v-for="item in eduOptions"
                     :key="item.value"
@@ -469,27 +469,9 @@
             // },required:true,trigger:''},{
             required:true,trigger:'change',message:'请选择学院'
           } ],
-          stuNumber:[{
-            validator: (rule, value, callback) => {
-              if (/^[\u4e00-\u9fa5A-Za-z0-9-_]{1,}$/.test(value) == false) {
-                this.$data.flag.stuNumber=false;
-                callback(new Error("输入无效"));
-              } else {
-                this.$data.flag.stuNumber=true;
-                callback();
-              }
-            },required:true,trigger:''},
-            {min:20,max:20,message:'请输入正确位数的学号',trigger:'change'}],
-          eduBack:[{
-            validator: (rule, value, callback) => {
-              if (/^[\u4e00-\u9fa5A-Za-z0-9-_]{1,}$/.test(value) == false) {
-                this.$data.flag.eduBack=false;
-                callback(new Error("输入无效"));
-              } else {
-                this.$data.flag.eduBack=true;
-                callback();
-              }
-            },required:true,trigger:''} ],
+          stuNumber:[
+            {required:true,min:14,max:14,message:'请输入正确位数的学号',trigger:'change'}],
+          eduBack:[{required:true,message:'请选择学历',trigger:'blur'} ],
           phone:[{
             validator: (rule, value, callback) => {
               if(/^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/.test(value) == false){
@@ -558,7 +540,7 @@
 
       },
       submitEdit(formName){                       //提交修改
-        if(this.$data.flag.name&&this.$data.flag.eduBack&&this.$data.flag.academe&&this.$data.flag.stuNumber&&this.$data.flag.phone&&this.$data.flag.Email)
+        if(this.$data.flag.name&&this.$data.flag.academe&&this.$data.flag.stuNumber&&this.$data.flag.phone&&this.$data.flag.Email)
         {
           this.$data.submitMembers[this.$data.index].name=this.$data.dialogFormEdit.name;
           this.$data.submitMembers[this.$data.index].eduBack=this.$data.dialogFormEdit.eduBack;
@@ -700,7 +682,9 @@
 
       },
       submitNew(formName){              //新建
-        if(this.$data.flag.name&&this.$data.flag.eduBack&&this.$data.flag.academe&&this.$data.flag.stuNumber&&this.$data.flag.phone&&this.$data.flag.Email) {
+        this.$refs[formName].validate((valid)=>{
+          if(valid){
+         
           this.$data.submitMembers.push({
             name: this.$data.dialogFormNew.name,
             eduBack: this.$data.dialogFormNew.eduBack,
@@ -723,7 +707,7 @@
             title: '错误',
             message: '创建输入无效，请修正输入'
           });
-        }
+        }})
       },
       resetNew(formName){                  //取消新建
         this.$data.flag.name=false;         //验证状态恢复
